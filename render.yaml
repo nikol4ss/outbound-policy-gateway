@@ -1,0 +1,125 @@
+# Review this template before provisioning paid resources.
+# PostgreSQL/Supabase and S3 must be configured separately.
+# No SQLite disk is provisioned: web and worker must share DATABASE_URL.
+services:
+  - type: web
+    name: outbound-policy-web
+    runtime: node
+    region: virginia
+    plan: starter
+    autoDeployTrigger: off
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: GATEWAY_MODE
+        value: sandbox
+      - key: LIVE_CALLS_ENABLED
+        value: "false"
+      - key: GLOBAL_PAUSED
+        value: "true"
+      - key: DATABASE_URL
+        sync: false
+      - key: APP_ORIGIN
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: GATEWAY_ENCRYPTION_KEY
+        sync: false
+      - key: AWS_REGION
+        value: us-east-1
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: S3_EVIDENCE_BUCKET
+        sync: false
+      - key: EVIDENCE_RETENTION_DAYS
+        value: "0"
+      - key: LEGAL_APPROVAL_REFERENCE
+        sync: false
+      - key: APPROVED_POLICY_VERSIONS
+        sync: false
+      - key: LEMON_SQUEEZY_APPROVED
+        value: "false"
+      - key: BILLING_APPROVAL_REFERENCE
+        sync: false
+
+  - type: worker
+    name: outbound-policy-worker
+    runtime: node
+    region: virginia
+    plan: starter
+    autoDeployTrigger: off
+    buildCommand: npm ci --include=dev
+    startCommand: npm run worker
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: GATEWAY_MODE
+        value: sandbox
+      - key: LIVE_CALLS_ENABLED
+        value: "false"
+      - key: GLOBAL_PAUSED
+        value: "true"
+      - key: DATABASE_URL
+        fromService:
+          type: web
+          name: outbound-policy-web
+          envVarKey: DATABASE_URL
+      - key: GATEWAY_ENCRYPTION_KEY
+        fromService:
+          type: web
+          name: outbound-policy-web
+          envVarKey: GATEWAY_ENCRYPTION_KEY
+      - key: SUPABASE_URL
+        fromService:
+          type: web
+          name: outbound-policy-web
+          envVarKey: SUPABASE_URL
+      - key: SUPABASE_ANON_KEY
+        fromService:
+          type: web
+          name: outbound-policy-web
+          envVarKey: SUPABASE_ANON_KEY
+      - key: APP_ORIGIN
+        fromService:
+          type: web
+          name: outbound-policy-web
+          envVarKey: APP_ORIGIN
+      - key: AWS_REGION
+        value: us-east-1
+      - key: AWS_ACCESS_KEY_ID
+        fromService:
+          type: web
+          name: outbound-policy-web
+          envVarKey: AWS_ACCESS_KEY_ID
+      - key: AWS_SECRET_ACCESS_KEY
+        fromService:
+          type: web
+          name: outbound-policy-web
+          envVarKey: AWS_SECRET_ACCESS_KEY
+      - key: S3_EVIDENCE_BUCKET
+        fromService:
+          type: web
+          name: outbound-policy-web
+          envVarKey: S3_EVIDENCE_BUCKET
+      - key: EVIDENCE_RETENTION_DAYS
+        value: "0"
+      - key: LEGAL_APPROVAL_REFERENCE
+        fromService:
+          type: web
+          name: outbound-policy-web
+          envVarKey: LEGAL_APPROVAL_REFERENCE
+      - key: APPROVED_POLICY_VERSIONS
+        fromService:
+          type: web
+          name: outbound-policy-web
+          envVarKey: APPROVED_POLICY_VERSIONS

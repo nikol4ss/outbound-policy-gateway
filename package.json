@@ -1,0 +1,29 @@
+{
+  "name": "call-policy-gateway",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24 <25" },
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env.local node_modules/next/dist/bin/next dev --webpack",
+    "build": "next build --webpack",
+    "start": "node --env-file-if-exists=.env.local node_modules/next/dist/bin/next start",
+    "setup": "node --env-file-if-exists=.env.local --experimental-strip-types scripts/setup.ts",
+    "worker": "node --env-file-if-exists=.env.local --experimental-strip-types scripts/worker.ts",
+    "migrate": "node --env-file-if-exists=.env.local --experimental-strip-types scripts/migrate.ts",
+    "recover": "node --env-file-if-exists=.env.local --experimental-strip-types scripts/recover.ts",
+    "check": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "node --experimental-strip-types --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "next": "16.4.5", "react": "19.3.1", "react-dom": "19.3.1",
+    "pg": "^8.16.3", "zod": "^4.1.12",
+    "@supabase/supabase-js": "^2.81.1", "@aws-sdk/client-s3": "^3.922.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3", "tsx": "^4.20.6", "@types/node": "^24.10.0",
+    "@types/react": "^19.2.2", "@types/react-dom": "^19.2.2", "@types/pg": "^8.15.6",
+    "eslint": "^9.39.1", "eslint-config-next": "16.4.5"
+  }
+}
